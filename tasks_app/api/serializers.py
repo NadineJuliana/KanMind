@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from boards_app.api.serializers import UserDataSerializer
-from tasks_app.models import Task
+from tasks_app.models import Task, Comment
 
 
 class TaskOutputSerializer(serializers.ModelSerializer):
@@ -90,3 +90,25 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         task.assignee_id = assignee_id
         task.reviewer_id = reviewer_id
         task.save()
+
+
+class CommentOutputSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(
+        source="author.first_name",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Comment
+        fields = [
+            "id",
+            "created_at",
+            "author",
+            "content",
+        ]
+
+
+class CommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["content"]
