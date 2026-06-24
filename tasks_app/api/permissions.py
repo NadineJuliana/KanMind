@@ -26,3 +26,12 @@ class CanDeleteTask(BasePermission):
         is_board_owner = obj.board.owner == request.user
 
         return is_creator or is_board_owner
+    
+
+class IsCommentAuthor(BasePermission):
+    """
+    Allows deleting comments only for their author.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user
