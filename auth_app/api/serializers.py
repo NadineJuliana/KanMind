@@ -51,3 +51,11 @@ class UserResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["fullname", "email", "user_id"]
+
+
+class UserDataSerializer(serializers.ModelSerializer):
+    fullname = serializers.CharField(source="first_name", read_only=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "fullname"]

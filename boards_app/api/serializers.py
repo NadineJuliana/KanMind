@@ -1,17 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
+from auth_app.api.serializers import UserDataSerializer
 from boards_app.models import Board
 
 User = get_user_model()
-
-
-class UserDataSerializer(serializers.ModelSerializer):
-    fullname = serializers.CharField(source="first_name", read_only=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "email", "fullname"]
 
 
 class BoardListSerializer(serializers.ModelSerializer):
@@ -37,13 +29,13 @@ class BoardListSerializer(serializers.ModelSerializer):
         return obj.members.count()
 
     def get_ticket_count(self, obj):
-        return 0
+        return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
-        return 0
+        return obj.tasks.filter(status="to-do").count()
 
     def get_tasks_high_prio_count(self, obj):
-        return 0
+        return obj.tasks.filter(priority="high").count()
 
 
 class BoardCreateUpdateSerializer(serializers.ModelSerializer):
@@ -93,12 +85,18 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "owner_id", "members", "tasks"]
 
     def get_tasks(self, obj):
-        return []
+        from tasks_app.api.serializers import TaskOutputSerializer
+        tasks = obj.tasks.all()
+        return TaskOutputSerializer(tasks, many=True).data
 
 
 class BoardUpdateResponseSerializer(serializers.ModelSerializer):
     owner_data = UserDataSerializer(source="owner", read_only=True)
-    members_data = UserDataSerializer(source="members", many=True)
+    members_data = UserDataSerializer(
+        source="members",
+        many=True,
+        read_only=True,
+    )
 
     class Meta:
         model = Board

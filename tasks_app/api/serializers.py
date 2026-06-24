@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from boards_app.api.serializers import UserDataSerializer
+from auth_app.api.serializers import UserDataSerializer
 from tasks_app.models import Task, Comment
 
 
@@ -24,7 +24,7 @@ class TaskOutputSerializer(serializers.ModelSerializer):
         ]
 
     def get_comments_count(self, obj):
-        return 0
+        return obj.comments.count()
 
 
 class TaskCreateUpdateSerializer(serializers.ModelSerializer):
