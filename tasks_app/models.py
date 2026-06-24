@@ -6,8 +6,11 @@ User = get_user_model()
 
 # Create your models here.
 
-
 class Task(models.Model):
+    """
+    Represents a task that belongs to a board.
+    """
+        
     STATUS_CHOICES = [
         ("to-do", "To Do"),
         ("in-progress", "In Progress"),
@@ -78,6 +81,10 @@ class Task(models.Model):
     
 
 class Comment(models.Model):
+    """
+    Represents a user comment on a task.
+    """
+
     task = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
