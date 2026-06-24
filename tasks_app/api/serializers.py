@@ -12,7 +12,6 @@ class TaskOutputSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id",
-            "board",
             "title",
             "description",
             "status",

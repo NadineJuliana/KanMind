@@ -85,9 +85,26 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "owner_id", "members", "tasks"]
 
     def get_tasks(self, obj):
-        from tasks_app.api.serializers import TaskOutputSerializer
-        tasks = obj.tasks.all()
-        return TaskOutputSerializer(tasks, many=True).data
+        tasks = []
+
+        for task in obj.tasks.all():
+            tasks.append(
+                {
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.description,
+                    "status": task.status,
+                    "priority": task.priority,
+                    "assignee": UserDataSerializer(task.assignee).data
+                    if task.assignee else None,
+                    "reviewer": UserDataSerializer(task.reviewer).data
+                    if task.reviewer else None,
+                    "due_date": task.due_date,
+                    "comments_count": task.comments.count(),
+                }
+            )
+
+        return tasks
 
 
 class BoardUpdateResponseSerializer(serializers.ModelSerializer):
