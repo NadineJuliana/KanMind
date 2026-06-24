@@ -60,6 +60,7 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
             "title",
             "members",
         ]
+        read_only_fields = ["id"]
 
     def create(self, validated_data):
         members = validated_data.pop("members", [])
@@ -80,3 +81,25 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
             instance.members.set(members)
 
         return instance
+    
+
+class BoardDetailSerializer(serializers.ModelSerializer):
+    owner_id = serializers.IntegerField(source="owner.id", read_only=True)
+    members = UserDataSerializer(many=True, read_only=True)
+    tasks = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Board
+        fields = ["id", "title", "owner_id", "members", "tasks"]
+
+    def get_tasks(self, obj):
+        return []
+
+
+class BoardUpdateResponseSerializer(serializers.ModelSerializer):
+    owner_data = UserDataSerializer(source="owner", read_only=True)
+    members_data = UserDataSerializer(source="members", many=True)
+
+    class Meta:
+        model = Board
+        fields = ["id", "title", "owner_data", "members_data"]
