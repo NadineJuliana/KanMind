@@ -1,16 +1,23 @@
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
-    RetrieveUpdateDestroyAPIView
+    RetrieveUpdateDestroyAPIView,
+    DestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from boards_app.models import Board
-from tasks_app.models import Task
-from .permissions import CanDeleteTask, IsTaskBoardMember
-from .serializers import TaskCreateUpdateSerializer, TaskOutputSerializer
+from tasks_app.models import Task, Comment
+from .permissions import CanDeleteTask, IsTaskBoardMember, IsCommentAuthor
+from .serializers import (
+    TaskCreateUpdateSerializer,
+    TaskOutputSerializer,
+    CommentCreateSerializer,
+    CommentOutputSerializer,
+)
 
 
 class AssignedToMeTaskListView(ListAPIView):
@@ -81,3 +88,57 @@ class TaskDetailView(RetrieveUpdateDestroyAPIView):
 
         data = TaskOutputSerializer(task).data
         return Response(data, status=status.HTTP_200_OK)
+    
+
+class CommentListCreateView(ListAPIView, CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        task = self._get_task()
+        self._check_board_access(task)
+        return task.comments.all()
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return CommentCreateSerializer
+        return CommentOutputSerializer
+
+    def create(self, request, *args, **kwargs):
+        task = self._get_task()
+        self._check_board_access(task)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        comment = serializer.save(
+            task=task,
+            author=request.user,
+        )
+
+        data = CommentOutputSerializer(comment).data
+        return Response(data, status=status.HTTP_201_CREATED)
+
+    def _get_task(self):
+        return get_object_or_404(
+            Task,
+            id=self.kwargs["task_id"],
+        )
+
+    def _check_board_access(self, task):
+        user = self.request.user
+        is_owner = task.board.owner == user
+        is_member = task.board.members.filter(id=user.id).exists()
+
+        if not is_owner and not is_member:
+            self.permission_denied(self.request)
+
+
+class CommentDeleteView(DestroyAPIView):
+    queryset = Comment.objects.all()
+    permission_classes = [IsAuthenticated, IsCommentAuthor]
+    lookup_url_kwarg = "comment_id"
+
+    def get_queryset(self):
+        return Comment.objects.filter(
+            task_id=self.kwargs["task_id"],
+        )
