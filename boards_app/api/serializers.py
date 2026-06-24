@@ -7,6 +7,10 @@ User = get_user_model()
 
 
 class BoardListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for board overview responses.
+    """
+    
     member_count = serializers.SerializerMethodField()
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
@@ -39,6 +43,9 @@ class BoardListSerializer(serializers.ModelSerializer):
 
 
 class BoardCreateUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for creating and updating boards.
+    """
     members = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=User.objects.all(),
@@ -76,6 +83,10 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
     
 
 class BoardDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for board detail responses including members and tasks.
+    """
+
     owner_id = serializers.IntegerField(source="owner.id", read_only=True)
     members = UserDataSerializer(many=True, read_only=True)
     tasks = serializers.SerializerMethodField()
@@ -85,6 +96,10 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "owner_id", "members", "tasks"]
 
     def get_tasks(self, obj):
+        """
+        Returns all tasks of a board in the required board detail format.
+        """
+        
         tasks = []
 
         for task in obj.tasks.all():
@@ -108,6 +123,10 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
 
 class BoardUpdateResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for board update response data.
+    """
+
     owner_data = UserDataSerializer(source="owner", read_only=True)
     members_data = UserDataSerializer(
         source="members",

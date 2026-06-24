@@ -4,6 +4,10 @@ from tasks_app.models import Task, Comment
 
 
 class TaskOutputSerializer(serializers.ModelSerializer):
+    """
+    Serializer for task response data.
+    """
+
     assignee = UserDataSerializer(read_only=True)
     reviewer = UserDataSerializer(read_only=True)
     comments_count = serializers.SerializerMethodField()
@@ -27,6 +31,10 @@ class TaskOutputSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for creating and updating tasks.
+    """
+
     assignee_id = serializers.IntegerField(required=False, allow_null=True)
     reviewer_id = serializers.IntegerField(required=False, allow_null=True)
 
@@ -74,6 +82,10 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         return attrs.get("board")
 
     def _validate_board_member(self, board, user_id):
+        """
+        Ensures that assignee and reviewer belong to the selected board.
+        """
+        
         if user_id is None:
             return
 
@@ -92,6 +104,10 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class CommentOutputSerializer(serializers.ModelSerializer):
+    """
+    Serializer for comment response data.
+    """
+
     author = serializers.CharField(
         source="author.first_name",
         read_only=True,
@@ -108,6 +124,10 @@ class CommentOutputSerializer(serializers.ModelSerializer):
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for creating comments.
+    """
+
     class Meta:
         model = Comment
         fields = ["content"]

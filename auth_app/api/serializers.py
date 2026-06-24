@@ -5,6 +5,10 @@ User = get_user_model()
 
 
 class RegistrationSerializer(serializers.Serializer):
+    """
+    Serializer used for validating and creating new user accounts.
+    """
+
     fullname = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
@@ -40,11 +44,19 @@ class RegistrationSerializer(serializers.Serializer):
     
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer used for validating login credentials.
+    """
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
 
 class UserResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for authentication response user data.
+    """
+
     fullname = serializers.CharField(source="first_name", read_only=True)
     user_id = serializers.IntegerField(source="id", read_only=True)
 
@@ -54,6 +66,10 @@ class UserResponseSerializer(serializers.ModelSerializer):
 
 
 class UserDataSerializer(serializers.ModelSerializer):
+    """
+    Serializer for nested user data in boards, tasks and comments.
+    """
+    
     fullname = serializers.CharField(source="first_name", read_only=True)
 
     class Meta:
