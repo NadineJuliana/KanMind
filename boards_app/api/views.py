@@ -23,6 +23,10 @@ User = get_user_model()
 
 
 class BoardListCreateView(ListCreateAPIView):
+    """
+    Handles listing and creating boards for the authenticated user.
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -45,6 +49,10 @@ class BoardListCreateView(ListCreateAPIView):
 
 
 class BoardDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Handles retrieving, updating and deleting a single board.
+    """
+
     queryset = Board.objects.all()
     lookup_url_kwarg = "board_id"
     permission_classes = [
@@ -72,6 +80,10 @@ class BoardDetailView(RetrieveUpdateDestroyAPIView):
 
 
 class EmailCheckView(APIView):
+    """
+    Returns user data for an existing email address.
+    """
+    
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

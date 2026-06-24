@@ -1,10 +1,10 @@
-from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
-    RetrieveUpdateDestroyAPIView,
     DestroyAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -21,6 +21,10 @@ from .serializers import (
 
 
 class AssignedToMeTaskListView(ListAPIView):
+    """
+    Returns tasks assigned to the authenticated user.
+    """
+
     serializer_class = TaskOutputSerializer
     permission_classes = [IsAuthenticated]
 
@@ -29,6 +33,10 @@ class AssignedToMeTaskListView(ListAPIView):
 
 
 class ReviewingTaskListView(ListAPIView):
+    """
+    Returns tasks where the authenticated user is the reviewer.
+    """
+
     serializer_class = TaskOutputSerializer
     permission_classes = [IsAuthenticated]
 
@@ -37,6 +45,10 @@ class ReviewingTaskListView(ListAPIView):
 
 
 class TaskCreateView(CreateAPIView):
+    """
+    Handles creating tasks inside boards.
+    """
+
     serializer_class = TaskCreateUpdateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -57,6 +69,10 @@ class TaskCreateView(CreateAPIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
     def _is_board_member(self, board_id, user):
+        """
+        Checks whether a user owns or belongs to a board.
+        """
+        
         try:
             board = Board.objects.get(id=board_id)
         except Board.DoesNotExist:
@@ -66,6 +82,10 @@ class TaskCreateView(CreateAPIView):
 
 
 class TaskDetailView(RetrieveUpdateDestroyAPIView):
+    """
+    Handles updating and deleting a single task.
+    """
+
     queryset = Task.objects.all()
     serializer_class = TaskCreateUpdateSerializer
     permission_classes = [IsAuthenticated, IsTaskBoardMember, CanDeleteTask]
@@ -91,6 +111,10 @@ class TaskDetailView(RetrieveUpdateDestroyAPIView):
     
 
 class CommentListCreateView(ListAPIView, CreateAPIView):
+    """
+    Handles listing and creating comments for a task.
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -125,6 +149,10 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
         )
 
     def _check_board_access(self, task):
+        """
+        Ensures that the user can access the task's board.
+        """
+        
         user = self.request.user
         is_owner = task.board.owner == user
         is_member = task.board.members.filter(id=user.id).exists()
@@ -134,6 +162,10 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
 
 
 class CommentDeleteView(DestroyAPIView):
+    """
+    Handles deleting a comment by its author.
+    """
+
     queryset = Comment.objects.all()
     permission_classes = [IsAuthenticated, IsCommentAuthor]
     lookup_url_kwarg = "comment_id"

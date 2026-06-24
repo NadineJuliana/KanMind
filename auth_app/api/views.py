@@ -13,7 +13,12 @@ from .serializers import (
 
 User = get_user_model()
 
+
 class RegistrationView(GenericAPIView):
+    """
+    Creates a new user account and returns an authentication token.
+    """
+
     serializer_class = RegistrationSerializer
     permission_classes = [AllowAny]
 
@@ -31,6 +36,10 @@ class RegistrationView(GenericAPIView):
 
 
 class LoginView(GenericAPIView):
+    """
+    Authenticates a user and returns an authentication token.
+    """
+     
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
