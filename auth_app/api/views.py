@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model
+
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView
@@ -18,7 +19,6 @@ class RegistrationView(GenericAPIView):
     """
     Creates a new user account and returns an authentication token.
     """
-
     serializer_class = RegistrationSerializer
     permission_classes = [AllowAny]
 
@@ -26,9 +26,7 @@ class RegistrationView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
         token, _ = Token.objects.get_or_create(user=user)
-
         user_data = UserResponseSerializer(user).data
         user_data["token"] = token.key
 
@@ -39,14 +37,12 @@ class LoginView(GenericAPIView):
     """
     Authenticates a user and returns an authentication token.
     """
-     
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         email = serializer.validated_data["email"]
         password = serializer.validated_data["password"]
 
@@ -67,7 +63,6 @@ class LoginView(GenericAPIView):
             )
 
         token, _ = Token.objects.get_or_create(user=user)
-
         user_data = UserResponseSerializer(user).data
         user_data["token"] = token.key
 
