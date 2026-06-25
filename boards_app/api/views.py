@@ -28,8 +28,6 @@ class BoardListCreateView(ListCreateAPIView):
     Handles listing and creating boards for the authenticated user.
     """
 
-    permission_classes = [IsAuthenticated]
-
     def get_queryset(self):
         user = self.request.user
         return Board.objects.filter(
@@ -84,8 +82,6 @@ class EmailCheckView(APIView):
     """
     Returns user data for an existing email address.
     """
-    
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         email = request.query_params.get("email")
