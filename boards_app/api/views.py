@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from boards_app.models import Board
+
 from .permissions import IsBoardOwnerForDelete, IsBoardOwnerOrMember
 from .serializers import (
     BoardCreateUpdateSerializer,

@@ -3,6 +3,7 @@ from .models import Board
 
 # Register your models here.
 
+
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
     list_display = ["id", "title", "owner", "created_at"]

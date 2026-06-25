@@ -3,6 +3,7 @@ from .models import Task, Comment
 
 # Register your models here.
 
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = (

@@ -19,6 +19,7 @@ class RegistrationView(GenericAPIView):
     """
     Creates a new user account and returns an authentication token.
     """
+
     serializer_class = RegistrationSerializer
     permission_classes = [AllowAny]
 
@@ -37,6 +38,7 @@ class LoginView(GenericAPIView):
     """
     Authenticates a user and returns an authentication token.
     """
+    
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 

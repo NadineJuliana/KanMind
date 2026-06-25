@@ -64,7 +64,6 @@ class TaskCreateView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
-
         data = TaskOutputSerializer(task).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -72,7 +71,7 @@ class TaskCreateView(CreateAPIView):
         """
         Checks whether a user owns or belongs to a board.
         """
-        
+
         try:
             board = Board.objects.get(id=board_id)
         except Board.DoesNotExist:
@@ -105,10 +104,9 @@ class TaskDetailView(RetrieveUpdateDestroyAPIView):
         )
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
-
         data = TaskOutputSerializer(task).data
         return Response(data, status=status.HTTP_200_OK)
-    
+
 
 class CommentListCreateView(ListAPIView, CreateAPIView):
     """
@@ -130,15 +128,12 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
     def create(self, request, *args, **kwargs):
         task = self._get_task()
         self._check_board_access(task)
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         comment = serializer.save(
             task=task,
             author=request.user,
         )
-
         data = CommentOutputSerializer(comment).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -152,7 +147,7 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
         """
         Ensures that the user can access the task's board.
         """
-        
+
         user = self.request.user
         is_owner = task.board.owner == user
         is_member = task.board.members.filter(id=user.id).exists()

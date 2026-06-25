@@ -1,15 +1,16 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
 # Create your models here.
 
+
 class Board(models.Model):
     """
     Represents a project board that contains tasks and members.
     """
-     
+
     title = models.CharField(max_length=255)
 
     owner = models.ForeignKey(

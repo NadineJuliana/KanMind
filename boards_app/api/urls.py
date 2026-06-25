@@ -3,6 +3,7 @@ URL routes for board endpoints.
 """
 
 from django.urls import path
+
 from .views import BoardDetailView, BoardListCreateView, EmailCheckView
 
 urlpatterns = [

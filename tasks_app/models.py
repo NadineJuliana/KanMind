@@ -1,16 +1,18 @@
-from django.db import models
-from boards_app.models import Board
 from django.contrib.auth import get_user_model
+from django.db import models
+
+from boards_app.models import Board
 
 User = get_user_model()
 
 # Create your models here.
 
+
 class Task(models.Model):
     """
     Represents a task that belongs to a board.
     """
-        
+
     STATUS_CHOICES = [
         ("to-do", "To Do"),
         ("in-progress", "In Progress"),
@@ -78,7 +80,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
-    
+
 
 class Comment(models.Model):
     """

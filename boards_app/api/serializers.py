@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+
 from auth_app.api.serializers import UserDataSerializer
 from boards_app.models import Board
 
@@ -10,7 +11,7 @@ class BoardListSerializer(serializers.ModelSerializer):
     """
     Serializer for board overview responses.
     """
-    
+
     member_count = serializers.SerializerMethodField()
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
@@ -80,7 +81,7 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
             instance.members.set(members)
 
         return instance
-    
+
 
 class BoardDetailSerializer(serializers.ModelSerializer):
     """
@@ -99,7 +100,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         """
         Returns all tasks of a board in the required board detail format.
         """
-        
+
         tasks = []
 
         for task in obj.tasks.all():

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from auth_app.api.serializers import UserDataSerializer
+
 from tasks_app.models import Task, Comment
 
 
@@ -61,7 +62,6 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         assignee_id = validated_data.pop("assignee_id", None)
         reviewer_id = validated_data.pop("reviewer_id", None)
         user = self.context["request"].user
-
         task = Task.objects.create(created_by=user, **validated_data)
         self._set_users(task, assignee_id, reviewer_id)
         return task
@@ -85,7 +85,7 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         """
         Ensures that assignee and reviewer belong to the selected board.
         """
-        
+
         if user_id is None:
             return
 
