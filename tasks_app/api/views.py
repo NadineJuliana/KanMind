@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
-    ListAPIView,
     DestroyAPIView,
+    ListAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
@@ -13,10 +13,10 @@ from boards_app.models import Board
 from tasks_app.models import Task, Comment
 from .permissions import CanDeleteTask, IsTaskBoardMember, IsCommentAuthor
 from .serializers import (
-    TaskCreateUpdateSerializer,
-    TaskOutputSerializer,
     CommentCreateSerializer,
     CommentOutputSerializer,
+    TaskCreateUpdateSerializer,
+    TaskOutputSerializer,
 )
 
 
@@ -26,7 +26,6 @@ class AssignedToMeTaskListView(ListAPIView):
     """
 
     serializer_class = TaskOutputSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Task.objects.filter(assignee=self.request.user)
@@ -38,7 +37,6 @@ class ReviewingTaskListView(ListAPIView):
     """
 
     serializer_class = TaskOutputSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Task.objects.filter(reviewer=self.request.user)
@@ -50,12 +48,11 @@ class TaskCreateView(CreateAPIView):
     """
 
     serializer_class = TaskCreateUpdateSerializer
-    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        board_id = request.data.get("board")
+        board = get_object_or_404(Board, id=request.data.get("board"))
 
-        if not self._is_board_member(board_id, request.user):
+        if not self._has_board_access(board, request.user):
             return Response(
                 {"detail": "You must be a board member."},
                 status=status.HTTP_403_FORBIDDEN,
@@ -67,15 +64,10 @@ class TaskCreateView(CreateAPIView):
         data = TaskOutputSerializer(task).data
         return Response(data, status=status.HTTP_201_CREATED)
 
-    def _is_board_member(self, board_id, user):
+    def _has_board_access(self, board, user):
         """
         Checks whether a user owns or belongs to a board.
         """
-
-        try:
-            board = Board.objects.get(id=board_id)
-        except Board.DoesNotExist:
-            return False
 
         return board.owner == user or board.members.filter(id=user.id).exists()
 
@@ -112,8 +104,6 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
     """
     Handles listing and creating comments for a task.
     """
-
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         task = self._get_task()
