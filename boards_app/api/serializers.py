@@ -32,15 +32,31 @@ class BoardListSerializer(serializers.ModelSerializer):
         ]
 
     def get_member_count(self, obj):
+        """
+        Returns the number of members assigned to the board.
+        """
+
         return obj.members.count()
 
     def get_ticket_count(self, obj):
+        """
+        Returns the total number of tasks assigned to the board.
+        """
+
         return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
+        """
+        Returns the number of tasks with the "to-do" status.
+        """
+
         return obj.tasks.filter(status="to-do").count()
 
     def get_tasks_high_prio_count(self, obj):
+        """
+        Returns the number of tasks with high priority.
+        """
+
         return obj.tasks.filter(priority="high").count()
 
 
@@ -64,6 +80,11 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
     def create(self, validated_data):
+        """
+        Creates a new board, assigns the requesting user as owner,
+        and adds the selected members.
+        """
+
         members = validated_data.pop("members", [])
         owner = self.context["request"].user
 
@@ -73,6 +94,10 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
         return board
 
     def update(self, instance, validated_data):
+        """
+        Updates the board title and optionally its members.
+        """
+
         members = validated_data.pop("members", None)
 
         instance.title = validated_data.get("title", instance.title)

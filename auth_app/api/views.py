@@ -24,6 +24,11 @@ class RegistrationView(GenericAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Registers a new user and returns the created user's data together
+        with an authentication token.
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -43,6 +48,11 @@ class LoginView(GenericAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Authenticates a user with email and password and returns the user's
+        data together with an authentication token.
+        """
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]

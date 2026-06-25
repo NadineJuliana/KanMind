@@ -8,7 +8,7 @@ class RegistrationSerializer(serializers.Serializer):
     """
     Serializer used for validating and creating new user accounts.
     """
-    
+
     fullname = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
@@ -39,6 +39,10 @@ class RegistrationSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
+        """
+        Creates and returns a new user with the validated registration data.
+        """
+
         fullname = validated_data["fullname"]
         email = validated_data["email"]
         password = validated_data["password"]
@@ -77,7 +81,7 @@ class UserDataSerializer(serializers.ModelSerializer):
     """
     Serializer for nested user data in boards, tasks and comments.
     """
-    
+
     fullname = serializers.CharField(source="first_name", read_only=True)
 
     class Meta:

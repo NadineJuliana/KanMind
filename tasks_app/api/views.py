@@ -28,6 +28,10 @@ class AssignedToMeTaskListView(ListAPIView):
     serializer_class = TaskOutputSerializer
 
     def get_queryset(self):
+        """
+        Returns all tasks assigned to the authenticated user.
+        """
+
         return Task.objects.filter(assignee=self.request.user)
 
 
@@ -39,6 +43,10 @@ class ReviewingTaskListView(ListAPIView):
     serializer_class = TaskOutputSerializer
 
     def get_queryset(self):
+        """
+        Returns all tasks where the authenticated user is assigned as reviewer.
+        """
+
         return Task.objects.filter(reviewer=self.request.user)
 
 
@@ -50,6 +58,10 @@ class TaskCreateView(CreateAPIView):
     serializer_class = TaskCreateUpdateSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Creates a task for a board if the authenticated user has board access.
+        """
+
         board = get_object_or_404(Board, id=request.data.get("board"))
 
         if not self._has_board_access(board, request.user):
@@ -83,11 +95,20 @@ class TaskDetailView(RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "task_id"
 
     def get_serializer_class(self):
+        """
+        Returns the output serializer for GET requests and the create/update
+        serializer for write requests.
+        """
+
         if self.request.method == "GET":
             return TaskOutputSerializer
         return TaskCreateUpdateSerializer
 
     def partial_update(self, request, *args, **kwargs):
+        """
+        Partially updates a task and returns the updated task data.
+        """
+
         task = self.get_object()
         serializer = self.get_serializer(
             task,
@@ -106,16 +127,31 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
     """
 
     def get_queryset(self):
+        """
+        Returns all comments belonging to the selected task after checking
+        board access.
+        """
+
         task = self._get_task()
         self._check_board_access(task)
         return task.comments.all()
 
     def get_serializer_class(self):
+        """
+        Returns the create serializer for POST requests and the output
+        serializer for read requests.
+        """
+
         if self.request.method == "POST":
             return CommentCreateSerializer
         return CommentOutputSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Creates a comment for the selected task if the authenticated user
+        has board access.
+        """
+
         task = self._get_task()
         self._check_board_access(task)
         serializer = self.get_serializer(data=request.data)
@@ -128,6 +164,10 @@ class CommentListCreateView(ListAPIView, CreateAPIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
     def _get_task(self):
+        """
+        Returns the task matching the task ID from the URL.
+        """
+
         return get_object_or_404(
             Task,
             id=self.kwargs["task_id"],
@@ -156,6 +196,10 @@ class CommentDeleteView(DestroyAPIView):
     lookup_url_kwarg = "comment_id"
 
     def get_queryset(self):
+        """
+        Returns comments belonging to the selected task.
+        """
+
         return Comment.objects.filter(
             task_id=self.kwargs["task_id"],
         )

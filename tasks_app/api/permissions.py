@@ -7,6 +7,11 @@ class IsTaskBoardMember(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        """
+        Returns ``True`` if the requesting user owns the board or is
+        a member of the board associated with the task.
+        """
+
         is_owner = obj.board.owner == request.user
         is_member = obj.board.members.filter(id=request.user.id).exists()
 
@@ -19,6 +24,11 @@ class CanDeleteTask(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        """
+        Allows all non-delete requests and restricts task deletion
+        to the task creator or the board owner.
+        """
+
         if request.method != "DELETE":
             return True
 
@@ -34,4 +44,9 @@ class IsCommentAuthor(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        """
+        Returns ``True`` if the requesting user is the author
+        of the comment.
+        """
+        
         return obj.author == request.user

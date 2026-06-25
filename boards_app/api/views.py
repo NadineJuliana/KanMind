@@ -29,17 +29,30 @@ class BoardListCreateView(ListCreateAPIView):
     """
 
     def get_queryset(self):
+        """
+        Returns all boards where the authenticated user is the owner
+        or a member.
+        """
+
         user = self.request.user
         return Board.objects.filter(
             Q(owner=user) | Q(members=user)
         ).distinct()
 
     def get_serializer_class(self):
+        """
+        Returns the appropriate serializer depending on the request method.
+        """
+
         if self.request.method == "GET":
             return BoardListSerializer
         return BoardCreateUpdateSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Creates a new board and returns it in the board list response format.
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         board = serializer.save()
@@ -61,11 +74,19 @@ class BoardDetailView(RetrieveUpdateDestroyAPIView):
     ]
 
     def get_serializer_class(self):
+        """
+        Returns the appropriate serializer depending on the request method.
+        """
+
         if self.request.method == "GET":
             return BoardDetailSerializer
         return BoardCreateUpdateSerializer
 
     def partial_update(self, request, *args, **kwargs):
+        """
+        Partially updates a board and returns the updated board data.
+        """
+
         board = self.get_object()
         serializer = self.get_serializer(
             board,
@@ -84,6 +105,10 @@ class EmailCheckView(APIView):
     """
 
     def get(self, request):
+        """
+        Returns user data for the email address provided as a query parameter.
+        """
+        
         email = request.query_params.get("email")
 
         if not email:

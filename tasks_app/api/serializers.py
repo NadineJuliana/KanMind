@@ -29,6 +29,10 @@ class TaskOutputSerializer(serializers.ModelSerializer):
         ]
 
     def get_comments_count(self, obj):
+        """
+        Returns the number of comments assigned to the task.
+        """
+
         return obj.comments.count()
 
 
@@ -54,12 +58,22 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
+        """
+        Validates that the selected assignee and reviewer belong
+        to the associated board.
+        """
+
         board = self._get_board(attrs)
         self._validate_board_member(board, attrs.get("assignee_id"))
         self._validate_board_member(board, attrs.get("reviewer_id"))
         return attrs
 
     def create(self, validated_data):
+        """
+        Creates a new task, assigns the authenticated user as creator,
+        and sets the assignee and reviewer.
+        """
+
         assignee_id = validated_data.pop("assignee_id", None)
         reviewer_id = validated_data.pop("reviewer_id", None)
         user = self.context["request"].user
@@ -68,6 +82,10 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         return task
 
     def update(self, instance, validated_data):
+        """
+        Updates a task and its assigned users.
+        """
+
         assignee_id = validated_data.pop("assignee_id", None)
         reviewer_id = validated_data.pop("reviewer_id", None)
 
@@ -78,6 +96,11 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
         return instance
 
     def _get_board(self, attrs):
+        """
+        Returns the associated board for validation during
+        task creation or update.
+        """
+
         if self.instance:
             return self.instance.board
         return attrs.get("board")
@@ -99,12 +122,20 @@ class TaskCreateUpdateSerializer(serializers.ModelSerializer):
             )
 
     def _set_users(self, task, assignee_id, reviewer_id):
+        """
+        Assigns the assignee and reviewer to the task and saves it.
+        """
+
         task.assignee_id = assignee_id
         task.reviewer_id = reviewer_id
         task.save()
 
 
 class BoardTaskSerializer(serializers.ModelSerializer):
+    """
+    Serializer for task data included in board detail responses.
+    """
+
     assignee = UserDataSerializer(read_only=True)
     reviewer = UserDataSerializer(read_only=True)
     comments_count = serializers.SerializerMethodField()
@@ -124,6 +155,10 @@ class BoardTaskSerializer(serializers.ModelSerializer):
         ]
 
     def get_comments_count(self, obj):
+        """
+        Returns the number of comments assigned to the task.
+        """
+
         return obj.comments.count()
 
 
