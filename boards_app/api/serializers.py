@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from auth_app.api.serializers import UserDataSerializer
+from tasks_app.api.serializers import BoardTaskSerializer
 from boards_app.models import Board
 
 User = get_user_model()
@@ -101,26 +102,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         Returns all tasks of a board in the required board detail format.
         """
 
-        tasks = []
-
-        for task in obj.tasks.all():
-            tasks.append(
-                {
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.description,
-                    "status": task.status,
-                    "priority": task.priority,
-                    "assignee": UserDataSerializer(task.assignee).data
-                    if task.assignee else None,
-                    "reviewer": UserDataSerializer(task.reviewer).data
-                    if task.reviewer else None,
-                    "due_date": task.due_date,
-                    "comments_count": task.comments.count(),
-                }
-            )
-
-        return tasks
+        return BoardTaskSerializer(obj.tasks.all(), many=True).data
 
 
 class BoardUpdateResponseSerializer(serializers.ModelSerializer):
