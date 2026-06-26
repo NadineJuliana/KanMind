@@ -236,7 +236,3 @@ The project follows:
 * CORS is configured for local frontend development.
 
 ---
-
-## Author
-
-Created as part of a Django REST Framework backend project.
