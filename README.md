@@ -12,23 +12,25 @@ Authentication is implemented using Django REST Framework Token Authentication.
 
 ## Features
 
-- User registration
-- User login
-- Token authentication
-- Board management
-- Task management
-- Comment management
-- Django admin interface
+* User registration
+* User login
+* Token authentication
+* Board management
+* Task management
+* Comment management
+* Django admin interface
 
 ---
 
 ## Tech Stack
 
-- Python 3.14
-- Django
-- Django REST Framework
-- DRF Token Authentication
-- SQLite3
+* Python 3.14
+* Django
+* Django REST Framework
+* DRF Token Authentication
+* SQLite3
+* django-cors-headers
+* python-dotenv
 
 ---
 
@@ -65,6 +67,19 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root based on the provided `.env.template`.
+
+Example:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=True
 ```
 
 ---
@@ -123,38 +138,39 @@ Authorization: Token <your_token>
 
 ### Authentication
 
-| Method | Endpoint |
-|---------|----------|
-| POST | `/api/registration/` |
-| POST | `/api/login/` |
+| Method | Endpoint             |
+| ------ | -------------------- |
+| POST   | `/api/registration/` |
+| POST   | `/api/login/`        |
 
 ### Boards
 
-| Method | Endpoint |
-|---------|----------|
-| GET | `/api/boards/` |
-| POST | `/api/boards/` |
-| GET | `/api/boards/{board_id}/` |
-| PATCH | `/api/boards/{board_id}/` |
+| Method | Endpoint                  |
+| ------ | ------------------------- |
+| GET    | `/api/boards/`            |
+| POST   | `/api/boards/`            |
+| GET    | `/api/boards/{board_id}/` |
+| PATCH  | `/api/boards/{board_id}/` |
 | DELETE | `/api/boards/{board_id}/` |
-| GET | `/api/email-check/` |
+| GET    | `/api/email-check/`       |
 
 ### Tasks
 
-| Method | Endpoint |
-|---------|----------|
-| GET | `/api/tasks/assigned-to-me/` |
-| GET | `/api/tasks/reviewing/` |
-| POST | `/api/tasks/` |
-| PATCH | `/api/tasks/{task_id}/` |
-| DELETE | `/api/tasks/{task_id}/` |
+| Method | Endpoint                     |
+| ------ | ---------------------------- |
+| GET    | `/api/tasks/assigned-to-me/` |
+| GET    | `/api/tasks/reviewing/`      |
+| POST   | `/api/tasks/`                |
+| GET    | `/api/tasks/{task_id}/`      |
+| PATCH  | `/api/tasks/{task_id}/`      |
+| DELETE | `/api/tasks/{task_id}/`      |
 
 ### Comments
 
-| Method | Endpoint |
-|---------|----------|
-| GET | `/api/tasks/{task_id}/comments/` |
-| POST | `/api/tasks/{task_id}/comments/` |
+| Method | Endpoint                                      |
+| ------ | --------------------------------------------- |
+| GET    | `/api/tasks/{task_id}/comments/`              |
+| POST   | `/api/tasks/{task_id}/comments/`              |
 | DELETE | `/api/tasks/{task_id}/comments/{comment_id}/` |
 
 ---
@@ -170,13 +186,14 @@ tasks_app/
 
 Each application contains its own
 
-- models
-- admin
-- api
-  - serializers
-  - views
-  - permissions
-  - urls
+* models.py
+* admin.py
+* api/
+
+  * serializers.py
+  * views.py
+  * permissions.py
+  * urls.py
 
 following Django REST Framework best practices.
 
@@ -186,12 +203,12 @@ following Django REST Framework best practices.
 
 Authenticated users can:
 
-- create and manage their own boards
-- access boards they belong to
-- create and edit tasks inside accessible boards
-- create comments on accessible tasks
+* create and manage their own boards
+* access boards they own or are members of
+* create and edit tasks inside accessible boards
+* create comments on accessible tasks
 
-Only authorized users are allowed to delete boards, tasks or comments according to the project requirements.
+Only authorized users are allowed to delete boards, tasks and comments according to the project requirements.
 
 ---
 
@@ -199,16 +216,23 @@ Only authorized users are allowed to delete boards, tasks or comments according 
 
 The project follows:
 
-- Django REST Framework Generic Views
-- ModelSerializer for CRUD operations
-- Token Authentication
-- PEP 8 style guide
-- Separation of concerns
-- Resource-oriented API design
-- - `django-cors-headers` is configured to allow communication with the provided frontend during development.
+* Django REST Framework Generic Views
+* ModelSerializer for CRUD operations
+* Token Authentication
+* Environment variables using `python-dotenv`
+* PEP 8 style guide
+* Separation of concerns
+* Resource-oriented API design
+
+`django-cors-headers` is configured to allow communication with the provided frontend during development.
 
 ---
 
-## Author
+## Notes
 
-Created as part of a Django REST Framework backend project.
+* SQLite is used as the default database.
+* The `.env` file is excluded from version control.
+* Create your own `.env` file using the provided `.env.template`.
+* CORS is configured for local frontend development.
+
+---
